@@ -35,7 +35,7 @@ export class CadastrarUsuarioComponent {
 
   private executarCadastro(): void {
     this.usuarioService.cadastrar(this.formularioCadastro.value).subscribe({
-      next: (_) => this.notificacaoService.sucessoNavegacao('/pessoa/listar'),
+      next: (_) => this.notificacaoService.sucessoNavegacao('/usuario/cadastrar'),
       error: (_) => this.notificacaoService.erro(),
     });
   }

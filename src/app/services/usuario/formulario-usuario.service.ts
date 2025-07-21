@@ -13,8 +13,9 @@ export class FormularioUsuarioService {
   public formulario(): Formulario<Usuario> {
     return this.fb.group({
       id: [],
+      email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required]],
-      username: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       cpf: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],

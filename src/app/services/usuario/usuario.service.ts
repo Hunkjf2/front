@@ -10,7 +10,7 @@ import { Usuario } from 'app/model/usuario/usuario.model';
 export class UsuarioService extends BaseService<Usuario> {
     
     public getUrl(): string {
-        return `${environment.serverUrl}/usuario`;
+        return `${environment.serverUrl}/admin/realms/estudos/users`;
     }
 
 }
