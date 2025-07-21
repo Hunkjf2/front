@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Usuario } from 'app/model/usuario/usuario.model';
 import { Formulario } from 'app/shared/models/model/formulario.model';
 
 @Injectable({ 
@@ -9,7 +10,7 @@ export class FormularioUsuarioService {
 
   constructor(private fb: FormBuilder) {}
 
-  public formulario(): Formulario<any> {
+  public formulario(): Formulario<Usuario> {
     return this.fb.group({
       id: [],
       login: ['', [Validators.required]],
@@ -19,10 +20,10 @@ export class FormularioUsuarioService {
       lastName: ['', [Validators.required]],
       senha: ['', [Validators.minLength(8)]],
       senhaTemporaria: [false]
-    }) as Formulario<any>;
+    }) as Formulario<Usuario>;
   }
 
-  public validarFormulario(formulario: Formulario<any>): boolean {
+  public validarFormulario(formulario: Formulario<Usuario>): boolean {
     return formulario.invalid ? (formulario.markAllAsTouched(), false) : true;
   }
 
