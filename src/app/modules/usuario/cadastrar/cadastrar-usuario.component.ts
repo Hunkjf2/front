@@ -6,6 +6,7 @@ import { NotificacaoService } from 'app/shared/services/notificacao.service';
 import { FormularioUsuarioService } from 'app/services/usuario/formulario-usuario.service';
 import { UsuarioService } from 'app/services/usuario/usuario.service';
 import { FormularioUsuarioComponent } from '../formulario/formulario-usuario.component';
+import { Usuario } from 'app/model/usuario/usuario.model';
 
 @Component({
   selector: 'app-cadastrar-usuario',
@@ -20,7 +21,7 @@ import { FormularioUsuarioComponent } from '../formulario/formulario-usuario.com
 
 export class CadastrarUsuarioComponent {
 
-  public formularioCadastro: Formulario<any> = this.formularioUsuarioService.formulario(); 
+  public formularioCadastro: Formulario<Usuario> = this.formularioUsuarioService.formulario(); 
 
   constructor(
     private formularioUsuarioService: FormularioUsuarioService,

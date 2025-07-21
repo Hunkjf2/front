@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
+import { Usuario } from 'app/model/usuario/usuario.model';
 import { CabecalhoComponent } from 'app/shared/components/cabecalho/cabecalho.component';
 import { Formulario } from 'app/shared/models/model/formulario.model';
 
@@ -26,7 +27,7 @@ import { Formulario } from 'app/shared/models/model/formulario.model';
 })
 export class FormularioUsuarioComponent {
 
-  @Input() public formulario: Formulario<any>;
+  @Input() public formulario: Formulario<Usuario>;
   @Input() public titulo: string;
   @Output() public enviar: EventEmitter<void> = new EventEmitter<void>();
 
