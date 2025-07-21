@@ -14,13 +14,24 @@ export class FormularioUsuarioService {
     return this.fb.group({
       id: [],
       email: ['', [Validators.required, Validators.email]],
+      emailVerified: [false],
+      enabled: [true],
       login: ['', [Validators.required]],
       username: ['', [Validators.required]],
       cpf: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      senha: ['', [Validators.minLength(8)]],
-      senhaTemporaria: [false]
+      attributes: this.fb.group({
+        cpf: ['', [Validators.required]],
+        phone: ['']
+      }),
+      credentials: this.fb.array([
+        this.fb.group({
+          type: ['password'],
+          value: ['', [Validators.minLength(8)]],
+          temporary: [false]
+        })
+      ])
     }) as Formulario<Usuario>;
   }
 
