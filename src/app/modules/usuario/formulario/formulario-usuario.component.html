@@ -1,0 +1,65 @@
+<div class="flex flex-col flex-auto w-full">
+    <app-cabecalho [titulo]="titulo"></app-cabecalho>
+    <div class="flex flex-col flex-auto">
+        <div class="w-full">
+            <div class="flex justify-center items-start min-h-screen p-4">
+                <mat-card-content class="w-full p-10">
+                    <div class="space-y-6">
+                        <form class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
+                            <div class="flex flex-col w-full mb-4">
+                                <div class="flex flex-row gap-4">
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>Login</mat-label>
+                                        <input matInput autocomplete="off">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>E-mail</mat-label>
+                                        <input matInput type="email" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="flex flex-col w-full mb-4 mt-2">
+                                <div class="flex flex-row gap-4">
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>Nome</mat-label>
+                                        <input matInput autocomplete="off">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>Sobrenome</mat-label>
+                                        <input matInput autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="flex flex-col w-full mt-2">
+                                <div class="flex flex-row gap-4">
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>Senha</mat-label>
+                                        <input matInput type="password" autocomplete="off">
+                                    </mat-form-field>
+                                    <mat-form-field appearance="outline" class="w-full">
+                                        <mat-label>Confirmar Senha</mat-label>
+                                        <input matInput type="password" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="flex flex-row w-full mt-6">
+                                <div class="flex items-center justify-start w-full">
+                                    <button mat-raised-button class="flex items-center gap-2"
+                                        [routerLink]="['/pessoa/listar']">
+                                        <span>Voltar</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-end w-full">
+                                    <button mat-raised-button color="primary" type="submit"
+                                        class="flex items-center gap-2">
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </mat-card-content>
+            </div>
+        </div>
+    </div>
+</div>
