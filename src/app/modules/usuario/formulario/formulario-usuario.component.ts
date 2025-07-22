@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { Usuario } from 'app/model/usuario/usuario.model';
 import { CabecalhoComponent } from 'app/shared/components/cabecalho/cabecalho.component';
 import { Formulario } from 'app/shared/models/model/formulario.model';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
 @Component({
   selector: 'app-formulario-usuario',
@@ -23,6 +24,10 @@ import { Formulario } from 'app/shared/models/model/formulario.model';
     MatInputModule,
     MatButtonModule,
     RouterModule,
+    NgxMaskDirective,
+  ],
+  providers: [
+    provideNgxMask()
   ]
 })
 export class FormularioUsuarioComponent {

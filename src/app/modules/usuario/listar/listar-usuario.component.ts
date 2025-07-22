@@ -12,8 +12,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { MatPaginatorIntPtBr } from 'app/core/paginator/mat-paginator-ptBr';
-import { MensagemSistema } from 'app/shared/models/enum/mensagem-sistema.enum';
 import { CabecalhoComponent } from 'app/shared/components/cabecalho/cabecalho.component';
+import { FiltroComponent } from 'app/shared/components/filtro/filtro.component';
+import { Usuario } from 'app/model/usuario/usuario.model';
+import { UsuarioService } from 'app/services/usuario/usuario.service';
+import { ModalConfirmacaoService } from 'app/shared/services/modal-confirmacao.service';
+import { NotificacaoService } from 'app/shared/services/notificacao.service';
+import { MensagemSistema } from 'app/shared/models/enum/mensagem-sistema.enum';
+import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 @Component({
     selector: 'app-listar-usuario',
@@ -32,20 +38,56 @@ import { CabecalhoComponent } from 'app/shared/components/cabecalho/cabecalho.co
         MatFormFieldModule,
         MatInputModule,
         RouterModule,
+        NgxMaskPipe,
+        FiltroComponent
     ],
     providers: [
         { provide: MatPaginatorIntl, useClass: MatPaginatorIntPtBr },
+        provideNgxMask()
     ],
     standalone: true,
 })
-export class ListarUsuarioComponent implements OnInit {
+export class ListarUsuarioComponent extends FiltroComponent implements OnInit {
 
-    public readonly colunas: string[] = ['nome', 'cpf', 'celular', 'telefoneResidencial', 'email', 'actions'];
+    public readonly colunas: string[] = ['username', 'attributes.cpf', 'email', 'actions'];
 
-    constructor() {}
-
-    public ngOnInit(): void {
+    constructor(private usuarioService: UsuarioService,
+                private modalConfirmacaoService: ModalConfirmacaoService,
+                private notificacaoService: NotificacaoService) {
+        super();
     }
 
+    public ngOnInit(): void {
+        this.carregarUsuarios();
+    }
+
+    private carregarUsuarios(): void {
+        this.usuarioService.listarTodos().subscribe({
+            next: (usuarios: Usuario[]) => this.dadosTabela.data = usuarios,
+            error: (error: any) => {
+                this.notificacaoService.erro(error.message || MensagemSistema.ERRO);
+            }
+        });
+    }
+
+    public deletarUsuario(id: string): void {
+        this.modalConfirmacaoService.open({
+            title:  'Excluir Usuário',
+            message: MensagemSistema.CONFIRMACAO_EXCLUSAO
+            }).afterClosed()
+              .subscribe((opcao: string) => { 
+                    opcao === 'Confirmar' && this.executarDelecao(id);
+            });
+    }
+    
+    private executarDelecao(id: string): void {
+        this.usuarioService.remover(id).subscribe({
+            next: (_) => {
+                this.notificacaoService.sucesso();
+                this.carregarUsuarios();
+            },
+            error: (error: any) => this.notificacaoService.erro(error.message || MensagemSistema.ERRO)
+        });
+    }
     
 }

@@ -33,7 +33,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id      : 'apps.perfil',
                 title   : 'Perfil',
                 type    : 'collapsable',
-                icon    : 'heroicons_outline:user',
+                icon    : 'heroicons_outline:users',
                 children: [
                     {
                         id   : 'perfil.listar',
