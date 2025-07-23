@@ -7,6 +7,28 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type    : 'group',
         icon    : 'heroicons_outline:home',
         children: [
+              {
+                id      : 'apps.sistema',
+                title   : 'Sistemas',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:computer-desktop',
+                children: [
+                    {
+                        id   : 'sistema.listar',
+                        title: 'Listar',
+                        type : 'basic',
+                        icon : 'heroicons_outline:bars-2',
+                        link : '/sistema/listar',
+                    },
+                    {
+                        id   : 'sistema.cadastrar',
+                        title: 'Cadastrar',
+                        type : 'basic',
+                        icon : 'heroicons_outline:bars-2',
+                        link : '/sistema/cadastrar',
+                    },
+                ],
+            },
             {
                 id      : 'apps.usuario',
                 title   : 'Usuário',

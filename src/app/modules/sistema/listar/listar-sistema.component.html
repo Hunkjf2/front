@@ -1,5 +1,5 @@
 <div class="flex flex-col flex-auto w-full">
-    <app-cabecalho [titulo]="'Listar Usuários'"></app-cabecalho>
+    <app-cabecalho [titulo]="'Listar Sistemas'"></app-cabecalho>
     <div class="flex flex-col flex-auto">
         <div class="w-full">
             <div class="flex justify-center items-start p-4">
@@ -11,7 +11,7 @@
                                     (filtroAlterado)="dadosTabela.filter = $event; dadosTabela.paginator?.firstPage()"></app-filtro>
                                 <div class="flex mt-0.5 h-[56px]">
                                     <button mat-raised-button color="primary" class="flex items-center gap-2"
-                                        routerLink="/usuario/cadastrar">
+                                        routerLink="/sistema/cadastrar">
                                         <mat-icon>add</mat-icon>
                                         <span>Cadastrar</span>
                                     </button>
@@ -19,48 +19,33 @@
                             </div>
                             <div class="mat-elevation-z7">
                                 <table mat-table [dataSource]="dadosTabela" class="w-full" matSort>
-                                    <ng-container matColumnDef="username">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Login
+                                    <ng-container matColumnDef="name">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header class="font-bold">Nome
                                         </th>
                                         <td mat-cell *matCellDef="let element" class="align-middle">
-                                            {{element.username}}</td>
+                                            {{element.name}}</td>
                                     </ng-container>
-                                    <ng-container matColumnDef="attributes.cpf">
+                                    <ng-container matColumnDef="description">
                                         <th mat-header-cell *matHeaderCellDef mat-sort-header
                                             class="font-bold text-center">
-                                            CPF
-                                        </th>
-                                        <td mat-cell *matCellDef="let element" class=" align-middle">
-                                            <span>{{element.attributes.cpf | mask: '000.000.000-00' }}</span>
-                                        </td>
-                                    </ng-container>
-                                    <ng-container matColumnDef="email">
-                                        <th mat-header-cell *matHeaderCellDef mat-sort-header
-                                            class="font-bold text-center">
-                                            E-mail</th>
+                                            Descrição</th>
                                         <td mat-cell *matCellDef="let element" class="align-middle">
-                                            {{element.email}}</td>
+                                            {{element.description}}</td>
                                     </ng-container>
                                     <ng-container matColumnDef="actions">
                                         <th mat-header-cell *matHeaderCellDef class="font-bold text-center">Ações</th>
                                         <td mat-cell *matCellDef="let element" class="text-center align-middle">
                                             <div class="flex gap-2 justify-center">
                                                 <button mat-icon-button matTooltip="Detalhar" color="primary"
-                                                    [routerLink]="['/usuario/detalhar', element.id]">
+                                                    [routerLink]="['/sistema/detalhar', element.id]">
                                                     <mat-icon>search</mat-icon>
                                                 </button>
-                                                <button *ngIf="element.enabled" mat-icon-button matTooltip="Desativar" color="primary">
-                                                    <mat-icon>visibility</mat-icon>
-                                                </button>
-                                                <button *ngIf="!element.enabled" mat-icon-button matTooltip="Ativar" color="primary">
-                                                    <mat-icon>visibility_off</mat-icon>
-                                                </button>
                                                 <button mat-icon-button matTooltip="Editar" color="primary"
-                                                    [routerLink]="['/usuario/editar', element.id]">
+                                                    [routerLink]="['/sistema/editar', element.id]">
                                                     <mat-icon>edit</mat-icon>
                                                 </button>
                                                 <button mat-icon-button matTooltip="Deletar" color="warn"
-                                                    (click)="deletarUsuario(element.id)">
+                                                    (click)="deletarSistema(element.id)">
                                                     <mat-icon>delete</mat-icon>
                                                 </button>
                                             </div>

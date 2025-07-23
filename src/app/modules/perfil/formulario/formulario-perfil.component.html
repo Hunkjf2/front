@@ -1,0 +1,84 @@
+<div class="flex flex-col flex-auto w-full">
+    <app-cabecalho [titulo]="titulo"></app-cabecalho>
+    <div class="flex flex-col flex-auto">
+        <div class="w-full">
+            <div class="flex justify-center items-start p-4">
+                <mat-card-content class="w-full p-10">
+                    <div class="space-y-6">
+                        <form [formGroup]="formulario" (ngSubmit)="this.enviar.emit()"
+                            class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
+                            <div class="flex flex-col w-full mb-4 mt-2">
+                                <div class="flex flex-row gap-4">
+                                    <div class="flex flex-col w-full">
+                                        <span class="mb-2">Nome:</span>
+                                        <mat-form-field appearance="outline" class="w-full">
+                                            <mat-label>Nome</mat-label>
+                                            <input matInput formControlName="name" autocomplete="off">
+                                            <mat-error
+                                                *ngIf="formulario.get('name')?.hasError('required') && formulario.get('name')?.touched">
+                                                Nome é obrigatório
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="flex flex-col w-full">
+                                        <span class="mb-2">Descrição:</span>
+                                        <mat-form-field appearance="outline" class="w-full">
+                                            <mat-label>Descrição</mat-label>
+                                            <input matInput formControlName="description" autocomplete="off">
+                                            <mat-error
+                                                *ngIf="formulario.get('description')?.hasError('required') && formulario.get('description')?.touched">
+                                                Descrição é obrigatória
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col w-full mb-4 mt-2">
+                                <div class="flex flex-col justify-center gap-4">
+                                    <div class="flex items-center justify-center w-full mb-5">
+                                        <span class="text-2xl font-bold">Associar permissões</span>
+                                    </div>
+                                    <div class="card">
+                                        <p-pickList [source]="sourceProducts" [target]="targetProducts"
+                                            sourceHeader="Itens Disponíveis" targetHeader="Itens Associados"
+                                            [dragdrop]="true" [responsive]="true" [showSourceControls]="false"
+                                            [showTargetControls]="false" filterBy="name"
+                                            sourceFilterPlaceholder="Buscar por nome"
+                                            targetFilterPlaceholder="Buscar por nome" 
+                                           [sourceStyle]="{ height: '20rem' }" [targetStyle]="{ height: '20rem' }"
+                                            class="p-picklist-source-controls"
+                                            >
+                                            <ng-template let-product pTemplate="item">
+                                                <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                                    <div class="flex-1 flex flex-column gap-2">
+                                                        <div class="flex align-items-center gap-2">
+                                                            <span class="text-md">{{product.name}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                        </p-pickList>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-row w-full mt-6">
+                                <div class="flex items-center justify-start w-full">
+                                    <button mat-raised-button type="button" class="flex items-center gap-2"
+                                        [routerLink]="['/perfil/listar']">
+                                        <span>Voltar</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-end w-full">
+                                    <button mat-raised-button color="primary" type="submit"
+                                        [disabled]="titulo == 'Detalhar Perfil'" class="flex items-center gap-2">
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </mat-card-content>
+            </div>
+        </div>
+    </div>
+</div>
