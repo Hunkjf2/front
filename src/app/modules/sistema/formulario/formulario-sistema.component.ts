@@ -58,15 +58,21 @@ export class FormularioSistemaComponent implements OnInit {
   
   }
 
+  
   ngOnInit(): void {
     this.listarClients();
-    this.filtro();
   }
 
   private filtro(): void {
     this.filteredClients = this.clientCtrl.valueChanges.pipe(
-      startWith(null),
-      map((client: string | null) => (client ? this._filter(client) : this.getAvailableClients())),
+      startWith(''), 
+      map((value: string | null) => {
+        const searchValue = value ? String(value).trim() : '';
+        if (!searchValue || searchValue === '') {
+          return this.getAvailableClients();
+        }
+        return this._filter(searchValue);
+      })
     );
   }
 
@@ -74,6 +80,7 @@ export class FormularioSistemaComponent implements OnInit {
     this.clientService.listarTodos().subscribe({
       next: (clientes: Client[]) => {
         this.clients = clientes;
+        this.filtro();
       },
       error: (error: any) => {
         this.notificacaoService.erro(error.message || MensagemSistema.ERRO);
@@ -83,27 +90,41 @@ export class FormularioSistemaComponent implements OnInit {
 
   private _filter(value: string): Client[] {
     const filterValue = value.toLowerCase();
-    return this.getAvailableClients().filter(client => 
-      client.name && client.name.toLowerCase().includes(filterValue)
-    );
+    return this.clients.filter(client => client.name?.toLowerCase().includes(filterValue));
   }
 
   private getAvailableClients(): Client[] {
-    return this.clients.filter(client => 
-      !this.selectedClients.find(selected => selected.id === client.id)
-    );
+    return this.clients;
   }
 
   public selectClient(client: Client): void {
-    this.selectedClients.push(client);
+    const isSelected = this.isClientSelected(client);
+    
+    if (isSelected) {
+      this.removeClient(client);
+    } else {
+      this.selectedClients.push(client);
+    }
     this.clientCtrl.setValue('');
+    this.clientCtrl.updateValueAndValidity(); 
   }
 
   public removeClient(client: Client): void {
     const index = this.selectedClients.indexOf(client);
     if (index >= 0) {
       this.selectedClients.splice(index, 1);
+      this.clientCtrl.updateValueAndValidity();
     }
+  }
+
+  public onInputFocus(): void {
+    if (this.clientCtrl.value !== '') {
+      this.clientCtrl.setValue('');
+    }
+  }
+
+  public isClientSelected(client: Client): boolean {
+    return this.selectedClients.some(selected => selected.id === client.id);
   }
   
 }
