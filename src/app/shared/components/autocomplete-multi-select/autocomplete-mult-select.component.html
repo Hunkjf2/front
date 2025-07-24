@@ -4,15 +4,15 @@
         <mat-label>{{ placeholder }}</mat-label>
 
         <mat-chip-grid #chipGrid [attr.aria-label]="ariaLabel">
-            @for (client of selectedClients; track client.id) {
+            @for (item of selectedItems; track item[config.valueProperty]) {
             <mat-chip-row 
-                (removed)="removeClient(client)" 
+                (removed)="removeItem(item)" 
                 [editable]="false"
                 [disabled]="disabled">
-                {{ client.name }}
+                {{ getDisplayValue(item) }}
                 <button 
                     matChipRemove 
-                    [attr.aria-label]="'remove ' + client.name"
+                    [attr.aria-label]="'remove ' + getDisplayValue(item)"
                     [disabled]="disabled">
                     <mat-icon>cancel</mat-icon>
                 </button>
@@ -22,8 +22,8 @@
 
         <input 
             [placeholder]="inputPlaceholder"
-            #clientInput 
-            [formControl]="clientCtrl" 
+            #itemInput 
+            [formControl]="itemCtrl" 
             [matAutocomplete]="auto"
             [matChipInputFor]="chipGrid" 
             matInput 
@@ -38,28 +38,28 @@
 
     <mat-autocomplete 
         #auto="matAutocomplete"
-        (optionSelected)="selectClient($event.option.value); clientInput.value = ''"
+        (optionSelected)="selectItem($event.option.value); itemInput.value = ''"
         [displayWith]="null">
 
-        @for (client of filteredClients | async; track client.id) {
+        @for (item of filteredItems | async; track item[config.valueProperty]) {
         <mat-option 
-            [value]="client"
-            [class.selected-option]="isClientSelected(client)">
+            [value]="item"
+            [class.selected-option]="isItemSelected(item)">
             <div class="flex items-center justify-between w-full py-1">
                 <div class="flex flex-col">
-                    <span class="font-medium">{{ client.name }}</span>
-                    <span class="text-sm text-gray-500" *ngIf="client.email">
-                        {{ client.email }}
+                    <span class="font-medium">{{ getDisplayValue(item) }}</span>
+                    <span class="text-sm text-gray-500" *ngIf="secondaryDisplayProperty && getSecondaryDisplayValue(item)">
+                        {{ getSecondaryDisplayValue(item) }}
                     </span>
                 </div>
-                <mat-icon *ngIf="isClientSelected(client)" class="text-primary-500">
+                <mat-icon *ngIf="isItemSelected(item)" class="text-primary-500">
                     check
                 </mat-icon>
             </div>
         </mat-option>
         }
 
-        @if ((filteredClients | async)?.length === 0) {
+        @if ((filteredItems | async)?.length === 0) {
         <mat-option disabled class="text-center text-gray-500">
             {{ emptyMessage }}
         </mat-option>

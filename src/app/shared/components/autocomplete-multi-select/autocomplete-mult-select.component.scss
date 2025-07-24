@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.selected-option {
+  background-color: rgba(var(--fuse-primary-rgb), 0.08);
+}
+
+.mat-mdc-form-field-error {
+  margin-top: 4px;
+}

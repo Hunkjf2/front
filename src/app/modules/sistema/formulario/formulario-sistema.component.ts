@@ -17,10 +17,7 @@ import { NotificacaoService } from 'app/shared/services/notificacao.service';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
-import {map, startWith} from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { AutocompleteMultiSelectComponent } from 'app/shared/components/autocomplete-multi-select/autocomplete-mult-select.component';
+import { AutocompleteConfig, AutocompleteMultiSelectComponent } from 'app/shared/components/autocomplete-multi-select/autocomplete-mult-select.component';
 
 @Component({
   selector: 'app-formulario-sistema',
@@ -43,18 +40,21 @@ import { AutocompleteMultiSelectComponent } from 'app/shared/components/autocomp
   ]
 })
 export class FormularioSistemaComponent implements OnInit {
-
   @Input() public formulario: Formulario<Sistema>;
   @Input() public titulo: string;
   @Output() public enviar: EventEmitter<void> = new EventEmitter<void>();
+  
   public clients: Client[] = [];
+  public clientConfig: AutocompleteConfig<Client> = {
+    displayProperty: 'name',
+    valueProperty: 'id',
+    searchProperties: ['name']
+  };
 
   constructor(
     private readonly clientService: ClientService,
     private readonly notificacaoService: NotificacaoService
-  ) {
-  
-  }
+  ) {}
   
   ngOnInit(): void {
     this.listarClients();
@@ -71,10 +71,4 @@ export class FormularioSistemaComponent implements OnInit {
     });
   }
 
-  public onClientsChanged(clients: Client[]): void {
-    this.clients = clients;
-  }
-
-
-  
 }

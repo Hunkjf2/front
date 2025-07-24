@@ -23,12 +23,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { Client } from 'app/model/client/client.model';
-import { ClientService } from 'app/services/clients/clients.service';
-import { NotificacaoService } from 'app/shared/services/notificacao.service';
-import { MensagemSistema } from 'app/shared/models/enum/mensagem-sistema.enum';
+
+export interface AutocompleteConfig<T> {
+  displayProperty: keyof T;
+  valueProperty: keyof T;
+  searchProperties: (keyof T)[];
+}
 
 @Component({
   selector: 'app-autocomplete-mult-select',
@@ -57,36 +59,42 @@ import { MensagemSistema } from 'app/shared/models/enum/mensagem-sistema.enum';
     }
   ]
 })
-export class AutocompleteMultiSelectComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
+export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDestroy, ControlValueAccessor, Validator {
 
   @Input() label: string = '';
   @Input() placeholder: string = '';
   @Input() inputPlaceholder: string = '';
   @Input() ariaLabel: string = '';
-  @Input() emptyMessage: string = '';
+  @Input() emptyMessage: string = 'Nenhum item encontrado';
   @Input() disabled: boolean = false;
   @Input() required: boolean = false;
   @Input() errorMessage: string = '';
+  
+  // Configuração genérica
+  @Input() items: T[] = [];
+  @Input() config: AutocompleteConfig<T> = {
+    displayProperty: 'name' as keyof T,
+    valueProperty: 'id' as keyof T,
+    searchProperties: ['name' as keyof T]
+  };
+  
+  // Para mostrar propriedades secundárias (como email no exemplo original)
+  @Input() secondaryDisplayProperty?: keyof T;
 
-  @Output() clientsChanged = new EventEmitter<Client[]>();
+  @Output() itemsChanged = new EventEmitter<T[]>();
 
-  public clients: Client[] = [];
-  public selectedClients: Client[] = [];
-  public clientCtrl = new FormControl('');
-  public filteredClients: Observable<Client[]>;
+  public selectedItems: T[] = [];
+  public itemCtrl = new FormControl('');
+  public filteredItems: Observable<T[]>;
   public hasError: boolean = false;
 
   private readonly destroy$ = new Subject<void>();
-  private onChange = (value: Client[]) => {};
+  private onChange = (value: T[]) => {};
   private onTouched = () => {};
 
-  constructor(
-    private readonly clientService: ClientService,
-    private readonly notificacaoService: NotificacaoService
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.loadClients();
     this.setupFilter();
   }
 
@@ -95,15 +103,15 @@ export class AutocompleteMultiSelectComponent implements OnInit, OnDestroy, Cont
     this.destroy$.complete();
   }
 
-  writeValue(value: Client[]): void {
+  writeValue(value: T[]): void {
     if (value && Array.isArray(value)) {
-      this.selectedClients = [...value];
+      this.selectedItems = [...value];
     } else {
-      this.selectedClients = [];
+      this.selectedItems = [];
     }
   }
 
-  registerOnChange(fn: (value: Client[]) => void): void {
+  registerOnChange(fn: (value: T[]) => void): void {
     this.onChange = fn;
   }
 
@@ -114,15 +122,14 @@ export class AutocompleteMultiSelectComponent implements OnInit, OnDestroy, Cont
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
     if (isDisabled) {
-      this.clientCtrl.disable();
+      this.itemCtrl.disable();
     } else {
-      this.clientCtrl.enable();
+      this.itemCtrl.enable();
     }
   }
 
-  // Validator implementation
   validate(control: AbstractControl): ValidationErrors | null {
-    if (this.required && this.selectedClients.length === 0) {
+    if (this.required && this.selectedItems.length === 0) {
       this.hasError = true;
       return { required: true };
     }
@@ -131,82 +138,85 @@ export class AutocompleteMultiSelectComponent implements OnInit, OnDestroy, Cont
   }
 
   private setupFilter(): void {
-    this.filteredClients = this.clientCtrl.valueChanges.pipe(
+    this.filteredItems = this.itemCtrl.valueChanges.pipe(
       startWith(''),
       map((value: string | null) => {
         const searchValue = value ? String(value).trim() : '';
         if (!searchValue || searchValue === '') {
-          return this.getAvailableClients();
+          return this.getAvailableItems();
         }
-        return this.filterClients(searchValue);
+        return this.filterItems(searchValue);
       }),
       takeUntil(this.destroy$)
     );
   }
 
-  private loadClients(): void {
-    this.clientService.listarTodos()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (clients: Client[]) => {
-          this.clients = clients;
-        },
-        error: (error: any) => {
-          this.notificacaoService.erro(error.message || MensagemSistema.ERRO);
-        }
-      });
-  }
-
-  private filterClients(value: string): Client[] {
+  private filterItems(value: string): T[] {
     const filterValue = value.toLowerCase();
-    return this.clients.filter(client => 
-      client.name?.toLowerCase().includes(filterValue)
+    return this.items.filter(item => 
+      this.config.searchProperties.some(prop => {
+        const propValue = item[prop];
+        return propValue && String(propValue).toLowerCase().includes(filterValue);
+      })
     );
   }
 
-  private getAvailableClients(): Client[] {
-    return this.clients;
+  private getAvailableItems(): T[] {
+    return this.items;
   }
 
-  public selectClient(client: Client): void {
+  public selectItem(item: T): void {
     if (this.disabled) return;
 
-    const isSelected = this.isClientSelected(client);
+    const isSelected = this.isItemSelected(item);
     
     if (isSelected) {
-      this.removeClient(client);
+      this.removeItem(item);
     } else {
-      this.selectedClients.push(client);
+      this.selectedItems.push(item);
       this.emitChanges();
     }
     
-    this.clientCtrl.setValue('');
+    this.itemCtrl.setValue('');
     this.onTouched();
   }
 
-  public removeClient(client: Client): void {
+  public removeItem(item: T): void {
     if (this.disabled) return;
 
-    const index = this.selectedClients.findIndex(selected => selected.id === client.id);
+    const index = this.selectedItems.findIndex(selected => 
+      selected[this.config.valueProperty] === item[this.config.valueProperty]
+    );
     if (index >= 0) {
-      this.selectedClients.splice(index, 1);
+      this.selectedItems.splice(index, 1);
       this.emitChanges();
     }
   }
 
   public onInputFocus(): void {
-    if (this.clientCtrl.value !== '') {
-      this.clientCtrl.setValue('');
+    if (this.itemCtrl.value !== '') {
+      this.itemCtrl.setValue('');
     }
     this.onTouched();
   }
 
-  public isClientSelected(client: Client): boolean {
-    return this.selectedClients.some(selected => selected.id === client.id);
+  public isItemSelected(item: T): boolean {
+    return this.selectedItems.some(selected => 
+      selected[this.config.valueProperty] === item[this.config.valueProperty]
+    );
+  }
+
+  public getDisplayValue(item: T): string {
+    return String(item[this.config.displayProperty] || '');
+  }
+
+  public getSecondaryDisplayValue(item: T): string {
+    if (!this.secondaryDisplayProperty) return '';
+    return String(item[this.secondaryDisplayProperty] || '');
   }
 
   private emitChanges(): void {
-    this.onChange(this.selectedClients);
-    this.clientsChanged.emit([...this.selectedClients]);
+    this.onChange(this.selectedItems);
+    this.itemsChanged.emit([...this.selectedItems]);
   }
 }

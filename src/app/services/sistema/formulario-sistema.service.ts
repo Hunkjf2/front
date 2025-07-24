@@ -15,7 +15,7 @@ export class FormularioSistemaService {
       id: [],
       name: ['', [Validators.required]],
       description: [''],
-      clients: this.fb.array([]),
+      clients: [[], [Validators.required]],
     }) as Formulario<Sistema>;
   }
 
