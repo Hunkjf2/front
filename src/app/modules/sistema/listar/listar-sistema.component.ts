@@ -14,16 +14,15 @@ import { RouterModule } from '@angular/router';
 import { MatPaginatorIntPtBr } from 'app/core/paginator/mat-paginator-ptBr';
 import { CabecalhoComponent } from 'app/shared/components/cabecalho/cabecalho.component';
 import { FiltroComponent } from 'app/shared/components/filtro/filtro.component';
-import { Usuario } from 'app/model/usuario/usuario.model';
-import { UsuarioService } from 'app/services/usuario/usuario.service';
 import { ModalConfirmacaoService } from 'app/shared/services/modal-confirmacao.service';
 import { NotificacaoService } from 'app/shared/services/notificacao.service';
 import { MensagemSistema } from 'app/shared/models/enum/mensagem-sistema.enum';
-import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { SistemaService } from 'app/services/sistema/sistema.service';
+import { Sistema } from 'app/model/sistema/sistema.model';
 
 @Component({
-    selector: 'app-listar-usuario',
-    templateUrl: 'listar-usuario.component.html',
+    selector: 'app-listar-sistema',
+    templateUrl: 'listar-sistema.component.html',
     imports: [
         CabecalhoComponent,
         CommonModule,
@@ -38,41 +37,39 @@ import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
         MatFormFieldModule,
         MatInputModule,
         RouterModule,
-        NgxMaskPipe,
         FiltroComponent
     ],
     providers: [
         { provide: MatPaginatorIntl, useClass: MatPaginatorIntPtBr },
-        provideNgxMask()
     ],
     standalone: true,
 })
-export class ListarUsuarioComponent extends FiltroComponent implements OnInit {
+export class ListarSistemaComponent extends FiltroComponent implements OnInit {
 
-    public readonly colunas: string[] = ['username', 'attributes.cpf', 'email', 'actions'];
+    public readonly colunas: string[] = ['name', 'description', 'actions'];
 
-    constructor(private usuarioService: UsuarioService,
-                private modalConfirmacaoService: ModalConfirmacaoService,
-                private notificacaoService: NotificacaoService) {
+    constructor(private readonly sistemaService: SistemaService,
+                private readonly modalConfirmacaoService: ModalConfirmacaoService,
+                private readonly notificacaoService: NotificacaoService) {
         super();
     }
 
     public ngOnInit(): void {
-        this.carregarUsuarios();
+        this.carregarSistemas();
     }
 
-    private carregarUsuarios(): void {
-        this.usuarioService.listarTodos().subscribe({
-            next: (usuarios: Usuario[]) => this.dadosTabela.data = usuarios,
+    private carregarSistemas(): void {
+        this.sistemaService.listarTodos().subscribe({
+            next: (sistemas: Sistema[]) => this.dadosTabela.data = sistemas,
             error: (error: any) => {
                 this.notificacaoService.erro(error.message || MensagemSistema.ERRO);
             }
         });
     }
 
-    public deletarUsuario(id: string): void {
+    public deletarSistema(id: string): void {
         this.modalConfirmacaoService.open({
-            title:  'Excluir Usuário',
+            title:  'Excluir Sistema',
             message: MensagemSistema.CONFIRMACAO_EXCLUSAO
             }).afterClosed()
               .subscribe((opcao: string) => { 
@@ -81,10 +78,10 @@ export class ListarUsuarioComponent extends FiltroComponent implements OnInit {
     }
     
     private executarDelecao(id: string): void {
-        this.usuarioService.remover(id).subscribe({
+        this.sistemaService.remover(id).subscribe({
             next: (_) => {
                 this.notificacaoService.sucesso();
-                this.carregarUsuarios();
+                this.carregarSistemas();
             },
             error: (error: any) => this.notificacaoService.erro(error.message || MensagemSistema.ERRO)
         });

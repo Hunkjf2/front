@@ -8,20 +8,9 @@
     [name]="'mainNavigation'"
     [navigation]="navigation.default"
     [opened]="!isScreenSmall">
-    <!-- Navigation header hook -->
     <ng-container fuseVerticalNavigationContentHeader>
-        <!-- Logo -->
-        <div class="flex items-center h-20 p-6 pb-0">
-            <!-- Light version -->
-            <img
-                class="dark:hidden w-30"
-                src="assets/images/logo/logo-text.svg"
-                alt="Logo image">
-            <!-- Dark version -->
-            <img
-                class="hidden dark:flex w-30"
-                src="assets/images/logo/logo-text-on-dark.svg"
-                alt="Logo image">
+        <div class="flex items-center justify-center h-20 p-6 pb-0">
+            <span class="text-2xl"><b>SSO ADMIN</b></span>
         </div>
     </ng-container>
 </fuse-vertical-navigation>

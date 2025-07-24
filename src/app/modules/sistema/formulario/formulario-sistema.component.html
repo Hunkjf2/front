@@ -1,0 +1,108 @@
+<div class="flex flex-col flex-auto w-full">
+    <app-cabecalho [titulo]="titulo"></app-cabecalho>
+    <div class="flex flex-col flex-auto">
+        <div class="w-full">
+            <div class="flex justify-center items-start p-4">
+                <mat-card-content class="w-full p-10">
+                    <div class="space-y-6">
+                        <form [formGroup]="formulario" (ngSubmit)="this.enviar.emit()"
+                            class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
+                            <div class="flex flex-col w-full mb-4 mt-2">
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex flex-col w-full">
+                                        <span class="mb-2">Nome:</span>
+                                        <mat-form-field appearance="outline" class="w-full">
+                                            <mat-label>Nome</mat-label>
+                                            <input matInput formControlName="name" autocomplete="off">
+                                            <mat-error
+                                                *ngIf="formulario.get('name')?.hasError('required') && formulario.get('name')?.touched">
+                                                Nome é obrigatório
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="flex flex-col w-full">
+                                        <span class="mb-2">Descrição:</span>
+                                        <mat-form-field appearance="outline" class="w-full">
+                                            <mat-label>Descrição</mat-label>
+                                            <input matInput formControlName="description" autocomplete="off">
+                                            <mat-error
+                                                *ngIf="formulario.get('description')?.hasError('required') && formulario.get('description')?.touched">
+                                                Descrição é obrigatória
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex flex-col w-full">
+                                        <span class="mb-2">Clientes:</span>
+                                        <mat-form-field class="w-full" appearance="outline">
+                                            <mat-label>Selecione clientes</mat-label>
+
+                                            <mat-chip-grid #chipGrid aria-label="Clientes selecionados">
+                                                @for (client of selectedClients; track client.id) {
+                                                <mat-chip-row (removed)="removeClient(client)" [editable]="false">
+                                                    {{client.name}}
+                                                    <button matChipRemove [attr.aria-label]="'remove ' + client.name">
+                                                        <mat-icon>cancel</mat-icon>
+                                                    </button>
+                                                </mat-chip-row>
+                                                }
+                                            </mat-chip-grid>
+
+                                            <input placeholder="Digite para buscar ou clique para ver todos..."
+                                                #clientInput [formControl]="clientCtrl" [matAutocomplete]="auto"
+                                                [matChipInputFor]="chipGrid" matInput (focus)="onInputFocus()"
+                                                autocomplete="off">
+                                        </mat-form-field>
+
+                                        <mat-autocomplete #auto="matAutocomplete"
+                                            (optionSelected)="selectClient($event.option.value); clientInput.value = ''"
+                                            [displayWith]="null">
+
+                                            @for (client of filteredClients | async; track client.id) {
+                                            <mat-option [value]="client"
+                                                [class.selected-option]="isClientSelected(client)">
+                                                <div class="flex items-center justify-between w-full py-1">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{client.name}}</span>
+                                                        <span class="text-sm text-gray-500"
+                                                            *ngIf="client.email">{{client.email}}</span>
+                                                    </div>
+                                                    <mat-icon *ngIf="isClientSelected(client)" class="text-primary-500">
+                                                        check
+                                                    </mat-icon>
+                                                </div>
+                                            </mat-option>
+                                            }
+
+                                            @if ((filteredClients | async)?.length === 0) {
+                                            <mat-option disabled class="text-center text-gray-500">
+                                                Nenhum cliente disponível
+                                            </mat-option>
+                                            }
+                                        </mat-autocomplete>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-row w-full mt-6">
+                                <div class="flex items-center justify-start w-full">
+                                    <button mat-raised-button type="button" class="flex items-center gap-2"
+                                        [routerLink]="['/sistema/listar']">
+                                        <span>Voltar</span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-end w-full">
+                                    <button mat-raised-button color="primary" type="submit"
+                                        [disabled]="titulo == 'Detalhar Sistema'" class="flex items-center gap-2">
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </mat-card-content>
+            </div>
+        </div>
+    </div>
+</div>

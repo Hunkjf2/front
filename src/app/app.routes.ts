@@ -57,6 +57,8 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'usuario', loadChildren: () => import('app/modules/usuario/usuario.routes')},
+            {path: 'perfil', loadChildren: () => import('app/modules/perfil/perfil.routes')},
+            {path: 'sistema', loadChildren: () => import('app/modules/sistema/sistema.routes')},
         ]
     }
 ];
