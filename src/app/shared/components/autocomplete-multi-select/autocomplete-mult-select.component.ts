@@ -70,17 +70,13 @@ export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDest
   @Input() required: boolean = false;
   @Input() errorMessage: string = '';
   
-  // Configuração genérica
   @Input() items: T[] = [];
   @Input() config: AutocompleteConfig<T> = {
     displayProperty: 'name' as keyof T,
     valueProperty: 'id' as keyof T,
     searchProperties: ['name' as keyof T]
   };
-  
-  // Para mostrar propriedades secundárias (como email no exemplo original)
   @Input() secondaryDisplayProperty?: keyof T;
-
   @Output() itemsChanged = new EventEmitter<T[]>();
 
   public selectedItems: T[] = [];
