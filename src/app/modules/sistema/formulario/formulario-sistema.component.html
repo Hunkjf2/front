@@ -32,56 +32,15 @@
                                         </mat-form-field>
                                     </div>
                                 </div>
-
                                 <div class="flex flex-col gap-4">
-                                    <div class="flex flex-col w-full">
-                                        <span class="mb-2">Clientes:</span>
-                                        <mat-form-field class="w-full" appearance="outline">
-                                            <mat-label>Selecione clientes</mat-label>
-
-                                            <mat-chip-grid #chipGrid aria-label="Clientes selecionados">
-                                                @for (client of selectedClients; track client.id) {
-                                                <mat-chip-row (removed)="removeClient(client)" [editable]="false">
-                                                    {{client.name}}
-                                                    <button matChipRemove [attr.aria-label]="'remove ' + client.name">
-                                                        <mat-icon>cancel</mat-icon>
-                                                    </button>
-                                                </mat-chip-row>
-                                                }
-                                            </mat-chip-grid>
-
-                                            <input placeholder="Digite para buscar ou clique para ver todos..."
-                                                #clientInput [formControl]="clientCtrl" [matAutocomplete]="auto"
-                                                [matChipInputFor]="chipGrid" matInput (focus)="onInputFocus()"
-                                                autocomplete="off">
-                                        </mat-form-field>
-
-                                        <mat-autocomplete #auto="matAutocomplete"
-                                            (optionSelected)="selectClient($event.option.value); clientInput.value = ''"
-                                            [displayWith]="null">
-
-                                            @for (client of filteredClients | async; track client.id) {
-                                            <mat-option [value]="client"
-                                                [class.selected-option]="isClientSelected(client)">
-                                                <div class="flex items-center justify-between w-full py-1">
-                                                    <div class="flex flex-col">
-                                                        <span class="font-medium">{{client.name}}</span>
-                                                        <span class="text-sm text-gray-500"
-                                                            *ngIf="client.email">{{client.email}}</span>
-                                                    </div>
-                                                    <mat-icon *ngIf="isClientSelected(client)" class="text-primary-500">
-                                                        check
-                                                    </mat-icon>
-                                                </div>
-                                            </mat-option>
-                                            }
-
-                                            @if ((filteredClients | async)?.length === 0) {
-                                            <mat-option disabled class="text-center text-gray-500">
-                                                Nenhum cliente disponível
-                                            </mat-option>
-                                            }
-                                        </mat-autocomplete>
+                                    <div class="flex flex-col gap-4">
+                                        <app-autocomplete-mult-select [label]="'Clientes'" [placeholder]="'Selecione clientes'"
+                                            [required]="true" [disabled]="titulo === 'Detalhar Sistema'"
+                                            [errorMessage]="'Pelo menos um cliente deve ser selecionado'"
+                                            [ariaLabel]="'Clientes'" [placeholder]="'Selecione clientes'" [emptyMessage]="'Nnenhum cliente encontrado'"
+                                            [inputPlaceholder]="'Digite para buscar ou clique para ver todos...'"
+                                            (clientsChanged)="onClientsChanged($event)">
+                                        </app-autocomplete-mult-select>
                                     </div>
                                 </div>
                             </div>
