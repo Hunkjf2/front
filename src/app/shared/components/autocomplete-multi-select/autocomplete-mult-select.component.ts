@@ -6,7 +6,9 @@ import {
   OnInit, 
   Output, 
   forwardRef,
-  OnDestroy
+  OnDestroy,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { 
   FormControl, 
@@ -15,7 +17,6 @@ import {
   NG_VALUE_ACCESSOR,
   NG_VALIDATORS,
   Validator,
-  AbstractControl,
   ValidationErrors
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,12 +26,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, Subject, takeUntil, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-
-export interface AutocompleteConfig<T> {
-  displayProperty: keyof T;
-  valueProperty: keyof T;
-  searchProperties: (keyof T)[];
-}
+import { AutocompleteConfig } from 'app/shared/models/model/autocompleteConfig.model';
 
 @Component({
   selector: 'app-autocomplete-mult-select',
@@ -59,47 +55,54 @@ export interface AutocompleteConfig<T> {
     }
   ]
 })
-export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDestroy, ControlValueAccessor, Validator {
+export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDestroy, OnChanges, ControlValueAccessor, Validator {
 
-  @Input() label: string = '';
-  @Input() placeholder: string = '';
-  @Input() inputPlaceholder: string = '';
-  @Input() ariaLabel: string = '';
-  @Input() emptyMessage: string = 'Nenhum item encontrado';
-  @Input() disabled: boolean = false;
-  @Input() required: boolean = false;
-  @Input() errorMessage: string = '';
-  
-  @Input() items: T[] = [];
-  @Input() config: AutocompleteConfig<T> = {
+  @Input() public label: string = '';
+  @Input() public placeholder: string = '';
+  @Input() public inputPlaceholder: string = '';
+  @Input() public ariaLabel: string = '';
+  @Input() public emptyMessage: string = 'Nenhum item encontrado';
+  @Input() public disabled: boolean = false;
+  @Input() public required: boolean = false;
+  @Input() public errorMessage: string = '';
+  @Input() public items: T[] = [];
+  @Input() public config: AutocompleteConfig<T> = {
     displayProperty: 'name' as keyof T,
     valueProperty: 'id' as keyof T,
     searchProperties: ['name' as keyof T]
   };
-  @Input() secondaryDisplayProperty?: keyof T;
-  @Output() itemsChanged = new EventEmitter<T[]>();
+  @Input() public secondaryDisplayProperty?: keyof T;
+  @Output() public itemsChanged = new EventEmitter<T[]>();
 
-  public selectedItems: T[] = [];
-  public itemCtrl = new FormControl('');
-  public filteredItems: Observable<T[]>;
-  public hasError: boolean = false;
+  public readonly itemCtrl = new FormControl('');
+  public readonly filteredItems: Observable<T[]>;
+  protected selectedItems: T[] = [];
+  protected hasError: boolean = false;
 
   private readonly destroy$ = new Subject<void>();
   private onChange = (value: T[]) => {};
   private onTouched = () => {};
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.setupFilter();
+  constructor() {
+    this.filteredItems = this.setupFilter();
   }
 
-  ngOnDestroy(): void {
+  public ngOnInit(): void {
+    this.itemCtrl.setValue('');
+  }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes['items'] && !changes['items'].firstChange) {
+      this.refreshFilter();
+    }
+  }
+
+  public ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  writeValue(value: T[]): void {
+  public writeValue(value: T[]): void {
     if (value && Array.isArray(value)) {
       this.selectedItems = [...value];
     } else {
@@ -107,15 +110,15 @@ export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDest
     }
   }
 
-  registerOnChange(fn: (value: T[]) => void): void {
+  public registerOnChange(fn: (value: T[]) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: () => void): void {
+  public registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
     if (isDisabled) {
       this.itemCtrl.disable();
@@ -124,41 +127,13 @@ export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDest
     }
   }
 
-  validate(control: AbstractControl): ValidationErrors | null {
+  public validate(): ValidationErrors | null {
     if (this.required && this.selectedItems.length === 0) {
       this.hasError = true;
       return { required: true };
     }
     this.hasError = false;
     return null;
-  }
-
-  private setupFilter(): void {
-    this.filteredItems = this.itemCtrl.valueChanges.pipe(
-      startWith(''),
-      map((value: string | null) => {
-        const searchValue = value ? String(value).trim() : '';
-        if (!searchValue || searchValue === '') {
-          return this.getAvailableItems();
-        }
-        return this.filterItems(searchValue);
-      }),
-      takeUntil(this.destroy$)
-    );
-  }
-
-  private filterItems(value: string): T[] {
-    const filterValue = value.toLowerCase();
-    return this.items.filter(item => 
-      this.config.searchProperties.some(prop => {
-        const propValue = item[prop];
-        return propValue && String(propValue).toLowerCase().includes(filterValue);
-      })
-    );
-  }
-
-  private getAvailableItems(): T[] {
-    return this.items;
   }
 
   public selectItem(item: T): void {
@@ -180,9 +155,7 @@ export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDest
   public removeItem(item: T): void {
     if (this.disabled) return;
 
-    const index = this.selectedItems.findIndex(selected => 
-      selected[this.config.valueProperty] === item[this.config.valueProperty]
-    );
+    const index = this.findItemIndex(item);
     if (index >= 0) {
       this.selectedItems.splice(index, 1);
       this.emitChanges();
@@ -190,29 +163,91 @@ export class AutocompleteMultiSelectComponent<T = any> implements OnInit, OnDest
   }
 
   public onInputFocus(): void {
-    if (this.itemCtrl.value !== '') {
-      this.itemCtrl.setValue('');
-    }
+    this.itemCtrl.setValue('');
     this.onTouched();
   }
 
+  public onInputClick(): void {
+    if (!this.disabled) {
+      this.itemCtrl.setValue('');
+      this.itemCtrl.updateValueAndValidity();
+    }
+  }
+
   public isItemSelected(item: T): boolean {
-    return this.selectedItems.some(selected => 
-      selected[this.config.valueProperty] === item[this.config.valueProperty]
-    );
+    return this.findItemIndex(item) >= 0;
   }
 
   public getDisplayValue(item: T): string {
-    return String(item[this.config.displayProperty] || '');
+    const objectValue: any = item[this.config.displayProperty];
+    return String(objectValue || '');
   }
 
   public getSecondaryDisplayValue(item: T): string {
     if (!this.secondaryDisplayProperty) return '';
-    return String(item[this.secondaryDisplayProperty] || '');
+    const secondaryDisplayProperty: any = item[this.secondaryDisplayProperty];
+    return String(secondaryDisplayProperty || '');
+  }
+
+  private getItemsBasedOnSearch(searchValue: string): T[] {
+    if (!searchValue) {
+        return this.getAvailableItems();
+    }
+    return this.filterItems(searchValue);
+  }
+
+  private setupFilter(): Observable<T[]> {
+      return this.itemCtrl.valueChanges.pipe(
+          startWith(''),
+          map((value: string | null) => {
+              const searchValue = value ? String(value).trim() : '';
+              return this.getItemsBasedOnSearch(searchValue);
+          }),
+          takeUntil(this.destroy$)
+      );
+  }
+
+  private filterItems(value: string): T[] {
+    const filterValue = value.toLowerCase();
+    return this.items.filter(item => 
+      this.config.searchProperties.some(prop => {
+        const propValue: any = item[prop];
+        return propValue && String(propValue).toLowerCase().includes(filterValue);
+      })
+    );
+  }
+
+  private getAvailableItems(): T[] {
+    return this.items;
+  }
+
+  private refreshFilter(): void {
+    if (this.itemCtrl.value === '' || this.itemCtrl.value === null) {
+      this.itemCtrl.setValue('');
+      this.itemCtrl.updateValueAndValidity();
+    }
+  }
+
+  private findItemIndex(item: T): number {
+    return this.selectedItems.findIndex(selected => 
+      selected[this.config.valueProperty] === item[this.config.valueProperty]
+    );
   }
 
   private emitChanges(): void {
     this.onChange(this.selectedItems);
     this.itemsChanged.emit([...this.selectedItems]);
+  }
+
+  public refreshItems(): void {
+    this.refreshFilter();
+  }
+
+  public get selectedItemsCount(): number {
+    return this.selectedItems.length;
+  }
+
+  public get isValid(): boolean {
+    return !this.hasError;
   }
 }
