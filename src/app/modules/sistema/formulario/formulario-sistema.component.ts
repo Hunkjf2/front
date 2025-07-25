@@ -62,6 +62,10 @@ export class FormularioSistemaComponent implements OnInit {
     this.listarClients();
   }
 
+  public onSubmit(): void {
+    this.enviar.emit();
+  }
+
   private listarClients(): void {
     this.clientService.listarTodos().subscribe({
       next: (clientes: Client[]) => {

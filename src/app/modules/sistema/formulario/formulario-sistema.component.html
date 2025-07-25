@@ -5,7 +5,7 @@
             <div class="flex justify-center items-start p-4">
                 <mat-card-content class="w-full p-10">
                     <div class="space-y-6">
-                        <form [formGroup]="formulario" (ngSubmit)="this.enviar.emit()"
+                        <form [formGroup]="formulario" (ngSubmit)="onSubmit()"
                             class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
                             <div class="flex flex-col w-full mb-4 mt-2">
                                 <div class="flex flex-col gap-4">
@@ -39,7 +39,7 @@
                                             [disabled]="titulo === 'Detalhar Sistema'"
                                             [errorMessage]="'Pelo menos um cliente deve ser selecionado'"
                                             [items]="clients" [config]="clientConfig"
-                                            [secondaryDisplayProperty]="'id_sistema'" formControlName="clients">
+                                            formControlName="clients">
                                         </app-autocomplete-mult-select>
                                     </div>
                                 </div>

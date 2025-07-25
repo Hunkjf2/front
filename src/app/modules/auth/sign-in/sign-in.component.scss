@@ -1,0 +1,23 @@
+// Opção 4: Responsivo com diferentes imagens para diferentes tamanhos
+.login-background-responsive {
+  // Mobile/Tablet (se necessário)
+  @media (max-width: 767px) {
+    background-image: url('../../../../assets/images/logo/projur.png');
+  }
+  
+  // Desktop
+  @media (min-width: 768px) {
+    background-image: url('../../../../assets/images/logo/projur.png');
+    background-size: 300px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  // Telas grandes
+  @media (min-width: 1920px) {
+    background-image: url('../../../../assets/images/logo/projur.png');
+    background-size: 300px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}

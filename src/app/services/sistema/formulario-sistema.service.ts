@@ -19,8 +19,19 @@ export class FormularioSistemaService {
     }) as Formulario<Sistema>;
   }
 
-  public validarFormulario(formulario: Formulario<Sistema>): boolean {
-    return formulario.invalid ? (formulario.markAllAsTouched(), false) : true;
+   public validarFormulario(formulario: Formulario<Sistema>): boolean {
+    if (formulario.invalid) {
+      formulario.markAllAsTouched();
+      Object.keys(formulario.controls).forEach(key => {
+        const control = formulario.get(key);
+        if (control) {
+          control.updateValueAndValidity();
+          control.markAsTouched();
+        }
+      });
+      return false;
+    }
+    return true;
   }
 
 }

@@ -2,7 +2,7 @@ import packageJson from '../../package.json';
 
 export const environment = {
     production: false,
-    serverUrl: 'http://localhost:3000',
+    serverUrl: 'https://qa.techlead.com.br/sso-igepps-api',
     version: packageJson.version,
     name: 'teste',
     systemName: packageJson.name,
