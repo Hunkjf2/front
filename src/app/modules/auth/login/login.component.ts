@@ -16,9 +16,9 @@ import { FormularioLoginService } from 'app/services/auth/formulario-login.servi
 import { Formulario } from 'app/shared/models/model/formulario.model';
 
 @Component({
-    selector     : 'auth-sign-in',
-    templateUrl  : './sign-in.component.html',
-    styleUrls   : ['./sign-in.component.scss'],
+    selector     : 'app-login',
+    templateUrl  : './login.component.html',
+    styleUrls   : ['./login.component.scss'],
     encapsulation: ViewEncapsulation.None,
     animations   : fuseAnimations,
     standalone   : true,

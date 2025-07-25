@@ -16,7 +16,7 @@ export const appRoutes: Route[] = [
             layout: 'empty'
         },
         children: [
-            {path: 'sign-in', loadChildren: () => import('app/modules/auth/sign-in/sign-in.routes')},
+            {path: 'login', loadChildren: () => import('app/modules/auth/login/login.routes')},
         ]
     },
     {
