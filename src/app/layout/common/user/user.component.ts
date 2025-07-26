@@ -52,7 +52,6 @@ export class UserComponent implements OnInit, OnDestroy
 
     signOut(): void
     {
-        this._authService.signOut();
         window.location.href = environment.contextPath + '/sign-in';
     }
 }
