@@ -3,9 +3,8 @@
     mat-icon-button
     [matMenuTriggerFor]="userActions">
     <span class="relative">
-        <img class="w-7 h-7 rounded-full" alt="User Avatar" [src]="user.avatar">
+        <img class="w-7 h-7 rounded-full" alt="User Avatar">
         <mat-icon
-            *ngIf="!showAvatar || !user.avatar"
             [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
     </span>
 </button>
@@ -20,4 +19,3 @@
         <span>Sair</span>
     </button>
 </mat-menu>
-

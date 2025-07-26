@@ -9,7 +9,6 @@ import { FuseHorizontalNavigationComponent, FuseNavigationService, FuseVerticalN
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { NavigationService } from 'app/core/navigation/navigation.service';
 import { Navigation } from 'app/core/navigation/navigation.types';
-import { ShortcutsComponent } from 'app/layout/common/shortcuts/shortcuts.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -18,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
     templateUrl  : './enterprise.component.html',
     encapsulation: ViewEncapsulation.None,
     standalone   : true,
-    imports      : [FuseLoadingBarComponent, NgIf, FuseVerticalNavigationComponent, MatButtonModule, MatIconModule, FuseFullscreenComponent, ShortcutsComponent, UserComponent, FuseHorizontalNavigationComponent, RouterOutlet],
+    imports      : [FuseLoadingBarComponent, NgIf, FuseVerticalNavigationComponent, MatButtonModule, MatIconModule, FuseFullscreenComponent, UserComponent, FuseHorizontalNavigationComponent, RouterOutlet],
 })
 export class EnterpriseLayoutComponent implements OnInit, OnDestroy
 {

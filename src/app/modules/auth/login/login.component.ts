@@ -14,6 +14,7 @@ import { LoginCredentials } from 'app/model/auth/login';
 import { AuthService } from 'app/services/auth/auth.service';
 import { FormularioLoginService } from 'app/services/auth/formulario-login.service';
 import { Formulario } from 'app/shared/models/model/formulario.model';
+import { NotificacaoService } from 'app/shared/services/notificacao.service';
 
 @Component({
     selector     : 'app-login',
@@ -33,6 +34,7 @@ export class AuthSignInComponent
         private readonly _authService: AuthService,
         private readonly _formularioLoginService: FormularioLoginService,
         private readonly _router: Router,
+        private readonly notificacaoService: NotificacaoService
     ){}
 
     public login(): void
@@ -45,6 +47,7 @@ export class AuthSignInComponent
             next: (dados: AuthResponse) => {
                 localStorage.setItem('accessToken', dados.accessToken);
                 localStorage.setItem('refreshToken', dados.refreshToken);
+                this.notificacaoService.sucessoNavegacao('/usuario/cadastrar');
             },
             error: (_) => {
                 
